@@ -16,15 +16,36 @@ Administration → Module → **Installieren** → Link `https://github.com/schu
 
 ## Branches
 
-| Branch | Zweck | Schutz |
-|---|---|---|
-| `main` | Produktiver Stand – davon wird auf Servern installiert; Tags (`vX.Y.Z`) nur hier | geschützt: nur per Pull Request, CI muss grün sein, kein Force-Push, nicht löschbar |
-| `staging` | Integrations- und Teststand vor dem Release | geschützt: nur per Pull Request, CI muss grün sein, kein Force-Push, nicht löschbar |
-| `feature/<thema>`, `fix/<thema>` | Arbeitszweige | – |
+| Branch | Zweck |
+|---|---|
+| `main` | Produktiver Stand – davon wird auf Servern installiert; Tags (`vX.Y.Z`) nur hier |
+| `staging` | Integrations- und Teststand vor dem Release |
+| Arbeitszweige (siehe unten) | Entwicklung einzelner Änderungen, kurzlebig |
 
-Ablauf: `feature/…` bzw. `fix/…` von `staging` abzweigen → Pull Request nach `staging` → nach dem Test
-Pull Request `staging` → `main` → Tag setzen. Dringende Fehlerbehebungen (`hotfix/…`) dürfen von `main`
-abzweigen und werden danach auch nach `staging` übernommen.
+Ablauf: Arbeitszweig von `staging` abzweigen → Pull Request nach `staging` → nach dem Test Pull Request
+`staging` → `main` → Tag setzen. Dringende Fehlerbehebungen (`hotfix/…`) zweigen von `main` ab, gehen per
+Pull Request nach `main` und werden danach auch nach `staging` übernommen. Arbeitszweige nach dem Merge löschen.
+
+> **Branch-Schutz:** `main` und `staging` sollen nur per Pull Request mit grüner CI geändert werden (kein
+> Force-Push, nicht löschbar). Bei privaten Repos ohne bezahlten GitHub-Plan lässt sich das derzeit **nicht
+> technisch erzwingen** – bis dahin gilt die Regel als Absprache.
+
+### Namensregeln
+
+Schema: `<typ>/<kurzbeschreibung>` – optional mit Issue-Nummer: `<typ>/<nr>-<kurzbeschreibung>`
+
+| Typ | Wofür | Beispiel |
+|---|---|---|
+| `feature/` | neue Funktion oder neues Modul | `feature/stundenplan-modul` |
+| `fix/` | Fehlerbehebung (über `staging`) | `fix/12-kalender-zeitzone` |
+| `hotfix/` | dringende Fehlerbehebung direkt von `main` | `hotfix/login-absturz` |
+| `chore/` | Wartung: Abhängigkeiten, Core-Update, CI, Aufräumen | `chore/core-v2.0.0` |
+| `docs/` | nur Dokumentation | `docs/readme-installation` |
+
+- nur Kleinbuchstaben, Ziffern und Bindestriche (kebab-case), keine Umlaute oder Leerzeichen (`ae`, `oe`, `ue`, `ss`)
+- kurz und sprechend (2–5 Wörter), auf Deutsch
+- betrifft die Änderung ein einzelnes Modul, die Modul-ID voranstellen: `feature/files-papierkorb`
+- Release-Tags: `vMAJOR.MINOR.PATCH` (z. B. `v0.1.0`), nur auf `main`
 
 ## Entwickeln
 

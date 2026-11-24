@@ -1,7 +1,7 @@
 # Module
 
 Hier liegen Erweiterungsmodule (`modules/<id>/`). Der Core liefert bewusst keine
-Fachmodule aus. Siehe `docs/module-development.md`.
+Fachmodule aus. Siehe `.core/docs/module-development.md`.
 
 Minimaler Aufbau:
 
@@ -14,4 +14,4 @@ modules/<id>/
 
 Module dürfen `$lib/sdk/*`, die UI-Bausteine `$lib/components/{ui,layout,forms}` sowie `$lib/forms`, `$lib/pdf-lists`
 und `$lib/utils` importieren; fremde Module nur als `import type` aus `$modules/<id>/contract`, nichts aus
-`$lib/server/*` (ESLint, siehe `docs/module-development.md` → „Erlaubte Importe“).
+`$lib/server/*` (ESLint, siehe `.core/docs/module-development.md` → „Erlaubte Importe“).

@@ -26,3 +26,4 @@ Vorbild für Aufbau und Muster: `KalypzoSolutions/atrium-basic-modules`.
 4. Migrationen additiv und unveränderlich (`check:migrations`).
 5. Texte dürfen deutsch bleiben; wer übersetzt: `messages/<sprache>.json` + `t()` aus `$lib/sdk/i18n`.
 6. Nichts committen oder pushen, solange der Nutzer es nicht verlangt.
+7. Branches: Arbeitszweige `feature|fix|hotfix|chore|docs/<kebab-case>` von `staging` (Hotfix von `main`), Merge nur per Pull Request – Details im `README.md` → „Branches“.
