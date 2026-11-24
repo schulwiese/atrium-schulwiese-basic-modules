@@ -49,7 +49,7 @@ jobs:
         core: [pinned, main]
     continue-on-error: ${{ matrix.core == 'main' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: true
           fetch-depth: 0
@@ -58,7 +58,7 @@ jobs:
       - name: Core auf main (nur Warnlauf)
         if: matrix.core == 'main'
         run: git -C .core fetch origin main && git -C .core checkout origin/main
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .core/.nvmrc
       - run: npm run setup
