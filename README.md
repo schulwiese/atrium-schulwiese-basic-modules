@@ -1,14 +1,15 @@
-# Atrium – Schulwiese Basismodule
+# Atrium – Schulwiese basic modules
 
-Module der Schulwiese für [Kalypzo Atrium](https://github.com/KalypzoSolutions/kalypzo-atrium).
-Module liegen unter `modules/<id>/`, der Katalog in `modules/atrium-modules.json`.
+Modules of the Schulwiese for [Kalypzo Atrium](https://github.com/KalypzoSolutions/kalypzo-atrium).
+Modules live in `modules/<id>/`, the catalog in `modules/atrium-modules.json`.
 
 ## Installation
 
-Atrium → Administration → Module → **Installieren** → Link
+Atrium → Administration → Modules → **Install** → link
 `https://github.com/schulwiese/atrium-schulwiese-basic-modules/tree/<commit>/modules`
+(or the `modules-<version>.zip` from a [release](https://github.com/schulwiese/atrium-schulwiese-basic-modules/releases)).
 
-## Entwickeln
+## Development
 
 ```bash
 git clone --recurse-submodules https://github.com/schulwiese/atrium-schulwiese-basic-modules.git
@@ -18,19 +19,16 @@ npm run check && npm run lint && npm test
 npm run demo   # http://localhost:4300
 ```
 
-Weitere Befehle stehen in `package.json`. Für die Modulentwicklung gelten die Regeln unter `.core/docs/module-development.md`.
+More commands are in `package.json`. Conventions (English code, Conventional Commits, branch names) and testing rules:
+`.claude/rules/conventions.md` and `.claude/rules/testing.md`; module development: `.core/docs/module-development.md`.
 
 ## Branches
 
-- `main`: Produktivstand. Tags (`vX.Y.Z`) werden nur hier gesetzt.
-- `staging`: Teststand vor dem Release.
-- Arbeitszweige zweigen von `staging` ab und gehen per Pull Request zurück. `hotfix/…` zweigt von `main` ab.
+- `main`: production. Tags (`vX.Y.Z`) only here.
+- `staging`: test state before a release (default branch).
+- Work branches `<type>/<short-description>` (`feature`, `fix`, `hotfix`, `chore`, `docs`) branch off `staging` and go back
+  via pull request; `hotfix/…` branches off `main`. Example: `feature/timetable`, `fix/12-calendar-timezone`.
 
-Benennung: `<typ>/<kurzbeschreibung>`, kleingeschrieben, mit Bindestrichen, ohne Umlaute.
-Typen: `feature/`, `fix/`, `hotfix/`, `chore/`, `docs/`.
-Beispiele: `feature/stundenplan`, `fix/12-kalender-zeitzone`.
-
-Die CI prüft Name und Ziel jedes Pull Requests. Ein Tag `vX.Y.Z` auf `main` erstellt automatisch ein Release
-mit ZIP der Module. Neue Core-Tags kommen wöchentlich als Pull Request nach `staging`.
-
-`main` und `staging` sind geschützt: Änderungen nur per Pull Request mit grüner CI, kein Force-Push, nicht löschbar.
+`main` and `staging` are protected: changes only via pull request with green CI, no force push, no deletion.
+CI checks the name and target of every pull request. A tag `vX.Y.Z` on `main` creates a release with a ZIP of the modules.
+New core tags arrive weekly as a pull request against `staging`.

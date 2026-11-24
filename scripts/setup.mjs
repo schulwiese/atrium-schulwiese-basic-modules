@@ -1,10 +1,10 @@
-// Einrichtung des Module-Repos (Kalypzo Atrium, Phase 8): `npm run setup`
+// Sets up the module repo: `npm run setup`
 //
-// 1. Core als Git-Submodul `.core` holen (fester Tag, siehe .gitmodules) und dessen Abhängigkeiten installieren
-// 2. `node_modules` dieses Repos = Link auf `.core/node_modules` (Junction unter Windows), damit Moduldateien die
-//    Pakete des Core finden (Svelte, Zod, bits-ui …)
-// 3. modulspezifische npm-Pakete (Feld `npm` der `atrium-module.json`) nach `modules/node_modules` installieren –
-//    genau wie der Supervisor beim Neubau im Server
+// 1. Fetch the core as git submodule `.core` (fixed tag, see .gitmodules) and install its dependencies
+// 2. `node_modules` of this repo = link to `.core/node_modules` (junction on Windows), so module files
+//    resolve the core's packages (Svelte, Zod, bits-ui …)
+// 3. Install module-specific npm packages (field `npm` in `atrium-module.json`) into `modules/node_modules` –
+//    exactly like the supervisor does when rebuilding on the server
 import { execFileSync } from 'node:child_process';
 import {
 	existsSync,
@@ -26,12 +26,12 @@ const run = (cmd, args, cwd) =>
 	execFileSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
 
 if (!existsSync(join(CORE, 'package.json'))) {
-	console.log('== Core-Submodul holen');
+	console.log('== Fetching core submodule');
 	run('git', ['submodule', 'update', '--init', '--recursive'], ROOT);
 }
 
 const corePkg = JSON.parse(readFileSync(join(CORE, 'package.json'), 'utf8'));
-console.log(`== Core ${corePkg.name}@${corePkg.version}: Abhängigkeiten`);
+console.log(`== Core ${corePkg.name}@${corePkg.version}: dependencies`);
 if (!existsSync(join(CORE, 'node_modules')) || process.argv.includes('--force'))
 	run(npm, ['ci'], CORE);
 
@@ -41,16 +41,16 @@ let stat = null;
 try {
 	stat = lstatSync(link);
 } catch {
-	// fehlt noch
+	// does not exist yet
 }
 if (stat && !stat.isSymbolicLink()) {
-	console.error('node_modules ist ein echter Ordner – bitte löschen und setup erneut ausführen.');
+	console.error('node_modules is a real folder – please delete it and run setup again.');
 	process.exit(1);
 }
 if (stat) rmSync(link, { force: true });
 symlinkSync(join(CORE, 'node_modules'), link, 'junction');
 
-console.log('== Pakete der Module');
+console.log('== Module packages');
 const known = new Set([
 	...Object.keys(corePkg.dependencies ?? {}),
 	...Object.keys(corePkg.devDependencies ?? {})
@@ -63,7 +63,7 @@ for (const id of readdirSync(MODULES).sort()) {
 	for (const [name, version] of Object.entries(pkg.npm ?? {})) {
 		if (known.has(name)) continue;
 		if (packages[name] && packages[name] !== version) {
-			console.error(`Konflikt: ${name} ${packages[name]} ≠ ${version} (${id})`);
+			console.error(`Conflict: ${name} ${packages[name]} ≠ ${version} (${id})`);
 			process.exit(1);
 		}
 		packages[name] = version;
@@ -79,12 +79,12 @@ if (Object.keys(packages).length) {
 		['install', '--ignore-scripts', '--no-audit', '--no-fund', '--legacy-peer-deps', '--omit=dev'],
 		MODULES
 	);
-	// gleiche Regel wie der Supervisor im Server: Kopien von Paketen, die der Core schon hat, entfernen
+	// same rule as the supervisor on the server: remove copies of packages the core already has
 	const { dedupeModulePackages } = await import(
 		pathToFileURL(join(CORE, 'scripts', 'supervisor', 'lib.mjs')).href
 	);
 	const removed = dedupeModulePackages(MODULES, CORE, packages);
-	if (removed.length) console.log(`vom Core übernommen: ${removed.join(', ')}`);
-} else console.log('keine eigenen Pakete');
+	if (removed.length) console.log(`taken from core: ${removed.join(', ')}`);
+} else console.log('no module packages');
 
-console.log('\nFertig. Nächste Schritte: npm run check · npm test · npm run build · npm run demo');
+console.log('\nDone. Next steps: npm run check · npm test · npm run build · npm run demo');

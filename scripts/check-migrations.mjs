@@ -1,6 +1,6 @@
-// Angewendete Migrationen sind unveränderlich: vergleicht jede `modules/<id>/migrations/*.sql` mit dem Stand am
-// letzten Tag (oder `--base <ref>`). Geänderte oder gelöschte Dateien → Fehler; neue Dateien sind erlaubt.
-// Zeilenenden werden ignoriert (CRLF/LF), wie die Prüfsumme des Core.
+// Applied migrations are immutable: compares every `modules/<id>/migrations/*.sql` with the state at the
+// latest tag (or `--base <ref>`). Changed or deleted files → error; new files are allowed.
+// Line endings are ignored (CRLF/LF), like the core's checksum.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -14,7 +14,7 @@ if (!base) {
 	try {
 		base = git('describe', '--tags', '--abbrev=0');
 	} catch {
-		console.log('Kein Tag vorhanden – nichts zu vergleichen.');
+		console.log('No tag yet – nothing to compare.');
 		process.exit(0);
 	}
 }
@@ -26,16 +26,16 @@ const problems = [];
 for (const f of files) {
 	const abs = join(ROOT, f);
 	if (!existsSync(abs)) {
-		problems.push(`gelöscht: ${f}`);
+		problems.push(`deleted: ${f}`);
 		continue;
 	}
 	const before = norm(git('show', `${base}:${f}`));
-	if (before.trim() !== norm(readFileSync(abs, 'utf8')).trim()) problems.push(`verändert: ${f}`);
+	if (before.trim() !== norm(readFileSync(abs, 'utf8')).trim()) problems.push(`changed: ${f}`);
 }
 if (problems.length) {
 	console.error(
-		`Angewendete Migrationen seit ${base} verändert:\n${problems.map((p) => `✗ ${p}`).join('\n')}`
+		`Applied migrations changed since ${base}:\n${problems.map((p) => `✗ ${p}`).join('\n')}`
 	);
 	process.exit(1);
 }
-console.log(`Migrationen unverändert seit ${base} (${files.length} Dateien).`);
+console.log(`Migrations unchanged since ${base} (${files.length} files).`);

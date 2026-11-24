@@ -2,7 +2,7 @@
 	"name": "atrium-schulwiese-basic-modules",
 	"private": true,
 	"version": "0.1.0",
-	"description": "Basismodule der Schulwiese für Kalypzo Atrium (Core als Submodul .core)",
+	"description": "Basic modules of the Schulwiese for Kalypzo Atrium (core as submodule .core)",
 	"type": "module",
 	"scripts": {
 		"setup": "node scripts/setup.mjs",
