@@ -1,11 +1,12 @@
-## Was ändert sich?
+## What changes?
 
-<!-- kurz: was und warum -->
+<!-- Short: what and why. Title format: <type>(<scope>): <summary> -->
 
-## Checkliste
+## Checklist
 
-- [ ] Ziel-Branch stimmt (`staging`; nur `staging` oder `hotfix/…` nach `main`)
-- [ ] Migrationen nur neu hinzugefügt, keine bestehenden geändert
-- [ ] neue Module/Rechte im Katalog (`modules/atrium-modules.json`) und im Manifest eingetragen
-- [ ] Tests ergänzt bzw. angepasst
-- [ ] CI ist grün
+- [ ] Target branch is correct (`staging`; only `staging` or `hotfix/…` into `main`)
+- [ ] Code, comments and commits in English; UI texts via `t()` in `de.json` and `en.json`
+- [ ] Tests added or updated (bug fix: regression test)
+- [ ] Migrations only added, none changed
+- [ ] New modules/permissions entered in the catalog (`modules/atrium-modules.json`) and manifest
+- [ ] CI is green

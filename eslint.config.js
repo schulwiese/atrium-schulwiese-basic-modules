@@ -1,5 +1,5 @@
-// ESLint des Module-Repos = Konfiguration des Core (Modulgrenzen, Core-Interna, Svelte/TS-Regeln),
-// Muster relativ zu diesem Ordner. Umgebung zuerst setzen, dann die Core-Konfiguration laden.
+// ESLint of the module repo = the core's config (module boundaries, core internals, Svelte/TS rules),
+// with patterns relative to this folder. Set the environment first, then load the core config.
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

@@ -1,7 +1,7 @@
-# Prüft wöchentlich, ob es einen neueren Tag des Core gibt, und öffnet dann einen Pull Request nach `staging`,
-# der das Submodul .core auf diesen Tag setzt. Danach wird die CI für den Branch gestartet.
-# Voraussetzung: Settings → Actions → General → „Allow GitHub Actions to create and approve pull requests“.
-name: Core-Update
+# Checks weekly whether there is a newer core tag and, if so, opens a pull request against `staging`
+# that moves the .core submodule to that tag. CI for the branch is started afterwards.
+# Requires: Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests".
+name: Core update
 
 on:
   schedule:
@@ -23,18 +23,18 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Neuesten Core-Tag ermitteln
+      - name: Find latest core tag
         id: tag
         run: |
           current=$(git -C .core describe --tags --exact-match 2>/dev/null || git -C .core rev-parse --short HEAD)
-          # Vorabversionen (v2.0.0-pre.2) sortieren vor der fertigen Version (v2.0.0)
+          # Pre-releases (v2.0.0-pre.2) sort before the final version (v2.0.0)
           latest=$(git -c versionsort.suffix=- ls-remote --tags --refs --sort=-v:refname \
             "$(git config -f .gitmodules submodule..core.url)" 'v*' | head -n1 | sed 's|.*refs/tags/||')
-          echo "Core: aktuell $current, neuester Tag $latest"
+          echo "Core: current $current, latest tag $latest"
           echo "current=$current" >> "$GITHUB_OUTPUT"
           echo "latest=$latest" >> "$GITHUB_OUTPUT"
 
-      - name: Pull Request anlegen
+      - name: Open pull request
         if: steps.tag.outputs.latest != '' && steps.tag.outputs.latest != steps.tag.outputs.current
         env:
           GH_TOKEN: ${{ github.token }}
@@ -43,7 +43,7 @@ jobs:
         run: |
           branch="chore/core-${LATEST}"
           if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
-            echo "Branch $branch gibt es schon – nichts zu tun."
+            echo "Branch $branch already exists – nothing to do."
             exit 0
           fi
           git -C .core fetch --tags --quiet
@@ -52,10 +52,10 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -b "$branch"
           git add .core
-          git commit -m "Core auf ${LATEST} aktualisieren"
+          git commit -m "chore(core): update core to ${LATEST}"
           git push origin "$branch"
           gh pr create --base staging --head "$branch" \
-            --title "Core auf ${LATEST} aktualisieren" \
-            --body "Automatisch erstellt: Core \`${CURRENT}\` → \`${LATEST}\`. Release-Notes des Core prüfen, CI abwarten, dann mergen."
-          # Pull Requests mit dem GITHUB_TOKEN starten keine CI – daher manuell anstoßen
+            --title "chore(core): update core to ${LATEST}" \
+            --body "Created automatically: core \`${CURRENT}\` → \`${LATEST}\`. Check the core release notes, wait for CI, then merge."
+          # Pull requests created with GITHUB_TOKEN don't trigger CI – start it explicitly
           gh workflow run ci.yml --ref "$branch"

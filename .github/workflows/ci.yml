@@ -1,5 +1,5 @@
-# CI des Module-Repos: Module gegen den gepinnten Core (.core = Submodul auf festem Tag) – Pflicht.
-# Zusätzlich gegen den aktuellen Core-Stand (`main`) als Warnung (continue-on-error).
+# CI of the module repo: modules against the pinned core (.core = submodule on a fixed tag) – required.
+# Additionally against the current core `main` as an early warning (continue-on-error).
 name: CI
 
 on:
@@ -18,29 +18,29 @@ env:
 
 jobs:
   branch-name:
-    name: Branch-Regeln
+    name: Branch rules
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Name und Ziel des Branches prüfen
+      - name: Check branch name and target
         env:
           HEAD: ${{ github.head_ref }}
           BASE: ${{ github.base_ref }}
         run: |
-          # Namensschema siehe README → Branches; Dependabot-Branches sind erlaubt
+          # Naming scheme: see .claude/rules/conventions.md → Branches; Dependabot branches are allowed
           if [[ ! "$HEAD" =~ ^(feature|fix|hotfix|chore|docs)/[a-z0-9]+(-[a-z0-9.]+)*$ \
                 && ! "$HEAD" =~ ^dependabot/ && "$HEAD" != staging && "$HEAD" != main ]]; then
-            echo "::error::Branch „$HEAD“ passt nicht zum Schema <typ>/<kurzbeschreibung> (feature|fix|hotfix|chore|docs, kebab-case)."
+            echo "::error::Branch '$HEAD' does not match <type>/<short-description> (feature|fix|hotfix|chore|docs, kebab-case)."
             exit 1
           fi
           if [[ "$BASE" == main && "$HEAD" != staging && ! "$HEAD" =~ ^hotfix/ ]]; then
-            echo "::error::Nach main nur aus staging oder hotfix/… – „$HEAD“ bitte nach staging mergen."
+            echo "::error::Only staging or hotfix/* may target main – please open the pull request for '$HEAD' against staging."
             exit 1
           fi
-          echo "Branch „$HEAD“ → „$BASE“ in Ordnung."
+          echo "Branch '$HEAD' → '$BASE' is fine."
 
   modules:
-    name: Module (${{ matrix.core }})
+    name: Modules (${{ matrix.core }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -53,9 +53,9 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          # Core (KalypzoSolutions/kalypzo-atrium) ist öffentlich; falls er privat wird: Token als Secret CORE_REPO_TOKEN
+          # The core (KalypzoSolutions/kalypzo-atrium) is public; if it becomes private, add a token as secret CORE_REPO_TOKEN
           token: ${{ secrets.CORE_REPO_TOKEN || github.token }}
-      - name: Core auf main (nur Warnlauf)
+      - name: Core on main (warning run only)
         if: matrix.core == 'main'
         run: git -C .core fetch origin main && git -C .core checkout origin/main
       - uses: actions/setup-node@v7
@@ -65,7 +65,7 @@ jobs:
       - run: npm run check:catalog
       - run: npm run check:migrations
       - run: npm run format:check
-      - name: Typprüfung
+      - name: Type check
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: npm run check

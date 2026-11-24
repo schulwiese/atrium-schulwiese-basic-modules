@@ -1,31 +1,41 @@
-# Atrium – Schulwiese Basismodule (Kalypzo Atrium) – Projekthinweise für Claude
+# Atrium – Schulwiese basic modules – project notes for Claude
 
-Basismodule der Schulwiese für den Core **Kalypzo Atrium**. Der Core liegt als Git-Submodul unter `.core` (fester Stand);
-seine Regeln gelten weiter: **`.core/.claude/CLAUDE.md`** und `.core/.claude/rules/*.md`
-(vor allem `modules.md`, `architecture.md`, `ui-design.md`, `testing-and-verification.md`). Der Nutzer ist deutschsprachig.
-Vorbild für Aufbau und Muster: `KalypzoSolutions/atrium-basic-modules`.
+Basic modules of the Schulwiese for the **Kalypzo Atrium** core. The core is a git submodule at `.core`, pinned to a tag.
+Talk to the user in **German**; everything written into the repo is **English** (see `rules/conventions.md`).
 
-## Aufbau
-- `modules/<id>/` – je Modul `atrium-module.json`, `module.ts`, `ui.ts`, `migrations/`, `pages/`, `tests/`, `e2e/`; Katalog `modules/atrium-modules.json`.
-- `scripts/` – `setup.mjs`, `core.mjs` (Befehle im Core mit `ATRIUM_MODULES_DIR=./modules`), Prüfskripte.
-- `.claude/rules/module-<id>.md` – Regeln je Modul (laden per `paths:`).
+## Core rules
+The core rules still apply: `.core/.claude/CLAUDE.md` and `.core/.claude/rules/*.md` – above all `modules.md`,
+`architecture.md`, `ui-design.md`, `testing-and-verification.md`.
+**Overridden in this repo:** everything about language. Code, identifiers, comments, log messages, commits, branches and
+docs are English (the core's "German comments" rule does not apply). UI texts are never hard-coded but translated
+(`de` + `en`). Where this file or `rules/*.md` contradict the core rules, this repo's rules win.
 
-## Befehle
-| Befehl | Zweck |
+## Layout
+- `modules/<id>/` – per module `atrium-module.json`, `module.ts`, `ui.ts`, `messages/{de,en}.json`, `migrations/`, `pages/`,
+  `tests/{unit,integration}`, `e2e/`; catalog `modules/atrium-modules.json`.
+- `scripts/` – `setup.mjs`, `core.mjs` (runs commands in the core with `ATRIUM_MODULES_DIR=./modules`), check scripts.
+- `.claude/rules/` – `conventions.md`, `testing.md`, and `module-<id>.md` per module (loaded via `paths:`).
+- `.github/` – CI, release, core update, Dependabot, PR template.
+
+## Commands
+| Command | Purpose |
 |---|---|
-| `npm run setup` | Core holen/installieren, `node_modules` → `.core/node_modules`, Modul-Pakete |
-| `npm run check` / `npm run lint` / `npm run format:check` | Typen / ESLint / Prettier |
-| `npm test` | Tests der Module |
-| `npm run build` / `npm run e2e` / `npm run demo` | Build / Playwright / Demo (:4300) |
-| `npm run check:catalog` / `npm run check:migrations` | Katalog vollständig / angewendete Migrationen unverändert |
+| `npm run setup` | Fetch/install core, link `node_modules` → `.core/node_modules`, install module packages |
+| `npm run check` / `npm run lint` / `npm run format:check` | Types / ESLint / Prettier |
+| `npm test` | Module tests (Vitest, PGlite) |
+| `npm run build` / `npm run e2e` / `npm run demo` | Build / Playwright / demo server (:4300) |
+| `npm run check:catalog` / `npm run check:migrations` | Catalog complete / applied migrations unchanged |
 
-Core aktualisieren: `git -C .core fetch --tags && git -C .core checkout <tag>`, `npm run setup -- --force`, prüfen, committen.
+Update the core: `git -C .core fetch --tags && git -C .core checkout <tag>`, `npm run setup -- --force`, verify, commit
+(`chore(core): update core to <tag>`). Usually done by the weekly `Core update` workflow.
 
-## Regeln (zusätzlich zu den Core-Regeln)
-1. Nur Dateien unter `modules/`, `scripts/` und `.claude/` ändern – **nie** in `.core` (Core-Änderungen im Core-Repo, danach Tag + Submodul).
-2. Module importieren nur `$lib/sdk/*`, `$lib/components/{ui,layout,forms}` und `import type` aus fremden `contract.ts`.
-3. Version/Abhängigkeiten nur in `atrium-module.json`; neue Rechte in Manifest **und** JSON; Katalog pflegen.
-4. Migrationen additiv und unveränderlich (`check:migrations`).
-5. Texte dürfen deutsch bleiben; wer übersetzt: `messages/<sprache>.json` + `t()` aus `$lib/sdk/i18n`.
-6. Nichts committen oder pushen, solange der Nutzer es nicht verlangt.
-7. Branches: Arbeitszweige `feature|fix|hotfix|chore|docs/<kebab-case>` von `staging` (Hotfix von `main`), Merge nur per Pull Request – Details im `README.md` → „Branches“.
+## Hard rules
+1. Only change files under `modules/`, `scripts/`, `.claude/`, `.github/` and root config – **never** `.core`
+   (core changes belong in the core repo, then tag + submodule update).
+2. Modules import only `$lib/sdk/*`, `$lib/components/{ui,layout,forms}`, `$lib/forms`, `$lib/pdf-lists`, `$lib/utils`
+   and `import type` from other modules' `contract.ts` – never `$lib/server/*`.
+3. Version and dependencies only in `atrium-module.json`; new permissions in manifest **and** JSON; keep the catalog in sync.
+4. Migrations are additive and immutable once tagged (`check:migrations`).
+5. Follow `rules/conventions.md` (language, naming, comments, commits, branches) and `rules/testing.md` (tests, definition of done).
+6. Work on a branch `<type>/<description>` from `staging`; merge only via pull request. Never commit or push unless the user asks.
+7. Never report a task as done before the definition of done in `rules/testing.md` is green; say explicitly what was not verified.

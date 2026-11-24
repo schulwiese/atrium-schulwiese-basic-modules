@@ -1,14 +1,14 @@
-# Zeilenenden einheitlich LF – unabhängig von core.autocrlf und Betriebssystem.
-# Migrations-Prüfsummen werden zusätzlich zeilenendenunabhängig berechnet (docs/database.md),
-# trotzdem sollen Checkouts und Docker-Builds überall dieselben Bytes enthalten.
+# Line endings are always LF – independent of core.autocrlf and the operating system.
+# Migration checksums ignore line endings anyway (core docs/database.md),
+# but checkouts and Docker builds should contain the same bytes everywhere.
 * text=auto eol=lf
 
-# Windows-Skripte brauchen CRLF
+# Windows scripts need CRLF
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
 
-# Binärdateien: nie umwandeln, nicht diffen
+# Binary files: never convert, never diff
 *.png binary
 *.jpg binary
 *.jpeg binary
