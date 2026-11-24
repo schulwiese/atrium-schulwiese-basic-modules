@@ -19,6 +19,8 @@ Vorbild für Aufbau und Muster: `KalypzoSolutions/atrium-basic-modules`.
 | `npm run build` / `npm run e2e` / `npm run demo` | Build / Playwright / Demo (:4300) |
 | `npm run check:catalog` / `npm run check:migrations` | Katalog vollständig / angewendete Migrationen unverändert |
 
+Core aktualisieren: `git -C .core fetch --tags && git -C .core checkout <tag>`, `npm run setup -- --force`, prüfen, committen.
+
 ## Regeln (zusätzlich zu den Core-Regeln)
 1. Nur Dateien unter `modules/`, `scripts/` und `.claude/` ändern – **nie** in `.core` (Core-Änderungen im Core-Repo, danach Tag + Submodul).
 2. Module importieren nur `$lib/sdk/*`, `$lib/components/{ui,layout,forms}` und `import type` aus fremden `contract.ts`.
