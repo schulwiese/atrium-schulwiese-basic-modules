@@ -1,0 +1,37 @@
+# Beim Push eines Tags `vX.Y.Z` (nur auf `main`): GitHub-Release mit automatischen Release-Notes und ZIP der Module.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag liegt auf main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag ${GITHUB_REF_NAME} liegt nicht auf main – Releases nur von main."
+            exit 1
+          fi
+
+      - name: ZIP der Module bauen
+        run: |
+          zip -r "modules-${GITHUB_REF_NAME}.zip" modules \
+            -x 'modules/node_modules/*' 'modules/package.json' 'modules/package-lock.json'
+
+      - name: Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=$([[ "$GITHUB_REF_NAME" == *-* ]] && echo --prerelease || true)
+          gh release create "$GITHUB_REF_NAME" "modules-${GITHUB_REF_NAME}.zip" \
+            --generate-notes --verify-tag $prerelease
