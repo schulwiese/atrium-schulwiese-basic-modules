@@ -24,10 +24,10 @@ const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const COMMANDS = {
 	check: [npm, ['run', 'check']],
 	// nur die Tests der Module (Core-Tests laufen im Core-Repo)
-	test: [npx, ['vitest', 'run', MODULES, ...rest]],
+	test: [npx, ['vitest', 'run', MODULES, '--passWithNoTests', ...rest]],
 	build: [npm, ['run', 'build']],
 	// Lint/Format aus der Wurzel dieses Repos (eigene eslint.config.js lädt die des Core, eigene .prettierrc)
-	lint: [npx, ['eslint', 'modules', 'scripts', ...rest]],
+	lint: [npx, ['eslint', '--no-error-on-unmatched-pattern', 'modules', 'scripts', ...rest]],
 	format: [npx, ['prettier', '--check', 'modules', 'scripts', ...rest]],
 	e2e: [npx, ['playwright', 'test', '--project', 'modules', '--project', 'integration', ...rest]],
 	demo: ['node', ['scripts/demo-server.mjs', ...rest]]
