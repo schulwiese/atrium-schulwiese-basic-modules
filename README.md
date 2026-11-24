@@ -33,5 +33,4 @@ Beispiele: `feature/stundenplan`, `fix/12-kalender-zeitzone`.
 Die CI prüft Name und Ziel jedes Pull Requests. Ein Tag `vX.Y.Z` auf `main` erstellt automatisch ein Release
 mit ZIP der Module. Neue Core-Tags kommen wöchentlich als Pull Request nach `staging`.
 
-`main` und `staging` werden nur per Pull Request mit grüner CI geändert. Technisch erzwungen wird das noch nicht,
-weil GitHub Branch-Schutz für private Repos ohne bezahlten Plan nicht anbietet.
+`main` und `staging` sind geschützt: Änderungen nur per Pull Request mit grüner CI, kein Force-Push, nicht löschbar.
