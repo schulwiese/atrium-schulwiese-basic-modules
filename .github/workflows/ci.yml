@@ -17,6 +17,28 @@ env:
   APP_SECRET: build-time-placeholder-build-time-placeholder
 
 jobs:
+  branch-name:
+    name: Branch-Regeln
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Name und Ziel des Branches prüfen
+        env:
+          HEAD: ${{ github.head_ref }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          # Namensschema siehe README → Branches; Dependabot-Branches sind erlaubt
+          if [[ ! "$HEAD" =~ ^(feature|fix|hotfix|chore|docs)/[a-z0-9]+(-[a-z0-9.]+)*$ \
+                && ! "$HEAD" =~ ^dependabot/ && "$HEAD" != staging && "$HEAD" != main ]]; then
+            echo "::error::Branch „$HEAD“ passt nicht zum Schema <typ>/<kurzbeschreibung> (feature|fix|hotfix|chore|docs, kebab-case)."
+            exit 1
+          fi
+          if [[ "$BASE" == main && "$HEAD" != staging && ! "$HEAD" =~ ^hotfix/ ]]; then
+            echo "::error::Nach main nur aus staging oder hotfix/… – „$HEAD“ bitte nach staging mergen."
+            exit 1
+          fi
+          echo "Branch „$HEAD“ → „$BASE“ in Ordnung."
+
   modules:
     name: Module (${{ matrix.core }})
     runs-on: ubuntu-latest

@@ -1,0 +1,15 @@
+# Aktualisiert die GitHub Actions der Workflows. Pull Requests gehen nach `staging`.
+# Der Core (.core) wird nicht über Dependabot aktualisiert, sondern über core-update.yml,
+# weil er auf Tags festgelegt ist und nicht auf den neuesten Commit.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: staging
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: chore
